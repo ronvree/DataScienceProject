@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+import numpy as np
 
 path_to_data_set = 'data\\'
 
@@ -12,7 +13,7 @@ def read_preprocessed_af_data():
         return pd.read_csv(f)
 
 
-def process_raw_af_data():
+def process_raw_af_data(window_size=30):
     """
     Read the raw AF data. Divide it in samples of 30 seconds. Remove invalid samples
     :return: A Pandas DataFrame containing all samples with corresponding labels
@@ -51,7 +52,7 @@ def process_raw_af_data():
 
         # For each label in Control, get the corresponding time interval in Data
         for i, row in y_df.iterrows():
-            sample = X_df.loc[(i <= X_df.index) & (i + pd.Timedelta(seconds=35) > X_df.index)].as_matrix()
+            sample = X_df.loc[(i <= X_df.index) & (i + pd.Timedelta(seconds=window_size * 2) > X_df.index)].as_matrix()
             # Sample filter:
             # Samples labeled with -1 are invalid
             if row['label'] == -1:
@@ -59,15 +60,15 @@ def process_raw_af_data():
             # Samples that contain pauses are invalid
             if 'Pause' in sample[:, 0]:
                 continue
-            # Samples that contain unphysiological high RR intervals are invalid (not sure about range)
+            # Samples that contain unphysiological high RR intervals are invalid (range from literature, see report)
             sample = [int(s) for s in sample[:, 1]]
-            if any([200 > s or s > 1700 for s in sample]):
+            if any([180 > s or s > 2000 for s in sample]):
                 continue
             # If there was not enough data in the time frame the sample is invalid
-            if len(sample) < 30:
+            if len(sample) < window_size:
                 continue
             # Cut sample to equal size
-            sample = sample[:30]
+            sample = sample[:window_size]
             # Add samples to total
             samples['samples'].append(sample)
             samples['labels'].append(row['label'])
@@ -88,6 +89,20 @@ def read_af_data():
     :return: A Pandas DataFrame with raw AF samples with labels
     """
     return pd.read_csv('data\\AF Data\\raw_data.csv', index_col=0)
+
+
+def read_preprocessed_af_data_with_features():
+    """
+    :return: A Pandas DataFrame with the preprocessed AF Data and added features
+    """
+    with open(path_to_data_set + 'Preprocessed_AFData.csv', encoding='UTF-8') as f:
+        data = pd.read_csv(f)
+        Xs = data.iloc[:, :-1]
+        fs = Xs.apply(np.std, axis=1)
+        fs.rename('std', inplace=True)
+        Xfs = Xs.join(fs)
+        Xfys = Xfs.join(data.iloc[:, -1])
+        return Xfys
 
 
 if __name__ == '__main__':

@@ -15,14 +15,14 @@ ys = data.iloc[:, -1].as_matrix()
 
 # List the models to be evaluated
 models = [
-    # DecisionTree(),                    # 0 Decision Tree
-    # GaussianNaiveBayes(),              # 1 Gaussian Naive Bayes
-    # RandomForest(),                    # 2 Random Forest
-    # KNNClassifier(),                   # 3 K Nearest Neighbours
+    DecisionTree(),                    # 0 Decision Tree
+    GaussianNaiveBayes(),              # 1 Gaussian Naive Bayes
+    RandomForest(),                    # 2 Random Forest
+    KNNClassifier(),                   # 3 K Nearest Neighbours
     # KnnDtw(),                          # 4 K Nearest Neighbours with Dynamic Time Warping
-    # SNN(len(Xs[0]), Xs.shape[1:]),     # 5 Shallow Neural Network
+    SNN(len(Xs[0]), Xs.shape[1:]),     # 5 Shallow Neural Network
     CNN(Xs.shape[1:]),                 # 6 Convolutional Neural Network
-    # GradientBoosting(),                # 7 Gradient Boosting
+    GradientBoosting(),                # 7 Gradient Boosting
     ]
 
 # Choose performance metrics with which the model should be evaluated

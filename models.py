@@ -87,7 +87,7 @@ class RawCNN(Model):
         print(self.model.summary())
 
     def fit(self, train_data, train_samples):
-        self.model.fit(train_data.reshape(train_data.shape + (1,)), train_samples, batch_size=32, epochs=10, verbose=2)
+        self.model.fit(train_data.reshape(train_data.shape + (1,)), train_samples, batch_size=32, epochs=32, verbose=2)
 
     def predict(self, samples):
         return self.model.predict(samples.reshape(samples.shape + (1,)))

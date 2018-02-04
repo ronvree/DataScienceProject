@@ -18,9 +18,19 @@ Xs = np.array([np.vectorize(int)(x[1:-1].split(',')) for x in Xs])
 # Normalize data
 Xs = normalize(Xs)
 
+# np.append(Xs, np.std(Xs))
+
 # Choose a model
-# model = RawCNN(Xs[0].shape)
-model = RandomForest()
+models = [
+    DecisionTree(),                    # 0 Decision Tree
+    GaussianNaiveBayes(),              # 1 Gaussian Naive Bayes
+    RandomForest(),                    # 2 Random Forest
+    KNNClassifier(),                   # 3 K Nearest Neighbours
+    # KnnDtw(),                          # 4 K Nearest Neighbours with Dynamic Time Warping
+    SNN(len(Xs[0]), Xs.shape[1:]),     # 5 Shallow Neural Network
+    CNN(Xs.shape[1:]),                 # 6 Convolutional Neural Network
+    GradientBoosting(),                # 7 Gradient Boosting
+    ]
 
 # Choose performance metrics with which the model should be evaluated
 performance_metrics = [metrics.accuracy_score,
@@ -32,6 +42,6 @@ performance_metrics = [metrics.accuracy_score,
                        error_rate,
                        ]
 
-# Obtain the model's performance from an evaluation protocol
-hold_out_validation(Xs, ys, 0.6, model, performance_metrics)
-# k_fold_cross_validation(Xs, ys, 10, model, performance_metrics)
+for model in models:
+    hold_out_validation(Xs, ys, 0.6, model, performance_metrics)
+    # k_fold_cross_validation(Xs, ys, 10, model, performance_metrics)
